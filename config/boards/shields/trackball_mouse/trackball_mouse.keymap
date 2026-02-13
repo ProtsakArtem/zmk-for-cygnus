@@ -7,11 +7,12 @@
     keymap {
         compatible = "zmk,keymap";
         default_layer {
-            bindings = <>;
+            bindings = <&none>;
         };
     };
 };
 
+/* Optional: Adjust sensitivity here */
 &trackball_listener {
     input-processors = <&zip_xy_scaler 1 1>;
 };
