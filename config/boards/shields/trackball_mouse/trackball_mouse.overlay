@@ -1,0 +1,81 @@
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <dt-bindings/zmk/matrix_transform.h>
+
+/ {
+    chosen {
+        /* ZMK expects a kscan + matrix transform; we add a dummy 1-key scanner */
+        zmk,kscan = &kscan0;
+        zmk,matrix-transform = &dummy_transform;
+    };
+
+    dummy_transform: matrix_transform_0 {
+        compatible = "zmk,matrix-transform";
+        rows = <1>;
+        columns = <1>;
+        map = <RC(0,0)>;
+    };
+
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
+    };
+};
+
+/* Dummy kscan (pin can be left unconnected; pull-up keeps it "not pressed") */
+kscan0: kscan0 {
+    compatible = "zmk,kscan-gpio-direct";
+    input-gpios = <&gpio0 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+};
+
+/* 3-wire SDIO: MOSI and MISO are the same pin (P1.00) */
+&pinctrl {
+    spi0_default: spi0_default {
+        group1 {
+            psels =
+                <NRF_PSEL(SPIM_SCK,  0, 24)>,  /* SCLK  -> P0.24 */
+                <NRF_PSEL(SPIM_MOSI, 1, 0)>,   /* SDIO  -> P1.00 */
+                <NRF_PSEL(SPIM_MISO, 1, 0)>;   /* SDIO  -> P1.00 */
+        };
+    };
+
+    spi0_sleep: spi0_sleep {
+        group1 {
+            psels =
+                <NRF_PSEL(SPIM_SCK,  0, 24)>,
+                <NRF_PSEL(SPIM_MOSI, 1, 0)>,
+                <NRF_PSEL(SPIM_MISO, 1, 0)>;
+            low-power-enable;
+        };
+    };
+};
+
+&spi0 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi0_default>;
+    pinctrl-1 = <&spi0_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    /* NCS -> P0.22 */
+    cs-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
+
+    trackball: trackball@0 {
+        status = "okay";
+        compatible = "pixart,pmw3610-alt";   /* required by badjeff main */
+        reg = <0>;
+        spi-max-frequency = <2000000>;
+
+        /* MOTION -> P0.20 */
+        irq-gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+
+        cpi = <800>;
+
+        evt-type = <INPUT_EV_REL>;
+        x-input-code = <INPUT_REL_X>;
+        y-input-code = <INPUT_REL_Y>;
+
+        force-awake;
+        force-awake-4ms-mode;
+    };
+};

@@ -1,0 +1,3 @@
+config ZMK_SHIELD_TRACKBALL_MOUSE
+    bool "Trackball mouse (PMW3610) on nice_nano"
+    select ZMK_POINTING
