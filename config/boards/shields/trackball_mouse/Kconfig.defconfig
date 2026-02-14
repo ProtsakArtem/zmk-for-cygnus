@@ -3,4 +3,7 @@ if ZMK_SHIELD_TRACKBALL_MOUSE
 config ZMK_KEYBOARD_NAME
     default "Trackball Mouse"
 
+config ZMK_MOUSE
+    default y
+
 endif

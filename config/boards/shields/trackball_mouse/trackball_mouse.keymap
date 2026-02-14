@@ -5,6 +5,7 @@
 #include <dt-bindings/input/input-event-codes.h>
 
 / {
+    /* Scale trackball XY movement (numerator / denominator) */
     zip_xy_scaler: zip_xy_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
@@ -20,6 +21,7 @@
     };
 };
 
+/* Apply XY scaler: multiplier 1, divisor 1 (1:1 ratio, adjust as needed) */
 &trackball_listener {
     input-processors = <&zip_xy_scaler 1 1>;
 };
