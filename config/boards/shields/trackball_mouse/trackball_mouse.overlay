@@ -56,14 +56,13 @@
 
         motion-gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 
-        /* CPI settings (default 1200) */
-        cpi = <1200>;
+        /* CPI property removed as it is not supported by the binding */
 
         /* Required by Zephyr input bindings */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
 
-        /* ZMK specific properties (kept for compatibility if needed) */
+        /* ZMK specific properties */
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
