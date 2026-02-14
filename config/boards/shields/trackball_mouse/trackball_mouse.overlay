@@ -2,11 +2,19 @@
  * PMW3610 Trackball Mouse Shield
  * Board: Pro Micro nRF52840 (nice!nano v2)
  *
- * Pin mapping (Pro Micro footprint):
- * SCK:  P0.24 (D5)
- * SDIO: P1.00 (D6) - Shared MOSI/MISO for 3-wire SPI
- * CS:   P0.22 (D4)
- * IRQ:  P0.20 (D3) - Motion interrupt
+ * WIRING GUIDE:
+ * -------------------------------------------------------------------------
+ * Sensor Pin | nice!nano Pin | Description
+ * -----------|---------------|---------------------------------------------
+ * VCC        | VCC           | 3.3V Power (DO NOT USE 5V/RAW!)
+ * GND        | GND           | Ground
+ * SDIO       | P1.00 (D6)    | Data (MOSI and MISO shared)
+ * SCLK       | P0.24 (D5)    | Clock
+ * NCS (CS)   | P0.22 (D4)    | Chip Select
+ * MOT (IRQ)  | P0.20 (D3)    | Motion Interrupt
+ * NRESET     | VCC           | Connect to 3.3V (or leave floating if internal pull-up)
+ * -------------------------------------------------------------------------
+ * Power Input to Board: 5V to RAW, GND to GND.
  */
 
 #include <dt-bindings/zmk/pointing.h>
@@ -30,7 +38,7 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 0, 24)>,
                     <NRF_PSEL(SPIM_MOSI, 1, 0)>,
-                    <NRF_PSEL(SPIM_MISO, 1, 0)>;
+                    <NRF_PSEL(SPIM_MISO, 1, 0)>; /* MISO connected to same pin as MOSI for 3-wire */
         };
     };
     spi3_sleep: spi3_sleep {
@@ -57,8 +65,10 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
 
+        /* IRQ pin */
         motion-gpios = <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 
+        /* Input configuration */
         zephyr,axis-x = <INPUT_REL_X>;
         zephyr,axis-y = <INPUT_REL_Y>;
     };
